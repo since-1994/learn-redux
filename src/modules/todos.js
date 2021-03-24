@@ -1,52 +1,62 @@
-const CHANGE_INPUT = "todos/CHANGE_INPUT";
-const INSERT = "todos/INSERT";
-const TOGGLE = "todos/TOGGLE";
-const REMOVE = "todos/REMOVE";
+const CHANGEINPUT = "todos/change-input";
+const INSERT = "todos/insert";
+const REMOVE = "todos/remove";
+const TOGGLE = "todos/toggle";
 
-//액션 생성 함수
-export const changeInput = (input) => ({
-  type: CHANGE_INPUT,
-  input,
-});
-
-export const insert = (text) => ({
-  type: INSERT,
-  todo: {
-    id: Date.now(),
-    text,
-    done: false,
-  },
-});
-
-export const toggle = (id) => ({
-  type: TOGGLE,
-  id,
-});
-
-export const remove = (id) => ({
-  type: REMOVE,
-  id,
-});
-
-const initialState = {
-  input: "",
-  todos: [
-    {
-      id: 1,
-      text: "리덕스 기초 배우기",
-      done: false,
-    },
-    {
-      id: 2,
-      text: "리액트와 리덕스 사용하기",
-      done: false,
-    },
-  ],
+export const changeInput = (input) => {
+  return {
+    type: CHANGEINPUT,
+    input,
+  };
 };
 
-const todos = (state = initialState, action) => {
+export const insert = (text) => {
+  return {
+    type: INSERT,
+    todo: {
+      text,
+      id: Date.now(),
+      done: false,
+    },
+  };
+};
+
+export const remove = (id) => {
+  return {
+    type: REMOVE,
+    id,
+  };
+};
+
+export const toggle = (id) => {
+  return {
+    type: TOGGLE,
+    id,
+  };
+};
+
+const initialTodos = [
+  {
+    id: 1,
+    text: "새로운 세계",
+    done: false,
+  },
+  {
+    id: 2,
+    text: "Hello world",
+    done: false,
+  },
+];
+
+const todos = (
+  state = {
+    input: "",
+    todos: initialTodos,
+  },
+  action
+) => {
   switch (action.type) {
-    case CHANGE_INPUT:
+    case CHANGEINPUT:
       return {
         ...state,
         input: action.input,
@@ -56,17 +66,17 @@ const todos = (state = initialState, action) => {
         ...state,
         todos: state.todos.concat(action.todo),
       };
-    case TOGGLE:
-      return {
-        ...state,
-        todos: state.todos.map((todo) => {
-          return action.id === todo.id ? { ...todo, done: !todo.done } : todo;
-        }),
-      };
     case REMOVE:
       return {
         ...state,
         todos: state.todos.filter((todo) => todo.id !== action.id),
+      };
+    case TOGGLE:
+      return {
+        ...state,
+        todos: state.todos.map((todo) =>
+          todo.id === action.id ? { ...todo, done: !todo.done } : todo
+        ),
       };
     default:
       return state;

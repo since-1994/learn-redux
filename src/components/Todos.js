@@ -1,6 +1,8 @@
 import React from "react";
+import { connect } from "react-redux";
+import { changeInput, insert, remove, toggle } from "../modules/todos";
 
-const Todo = ({ todo, toggle, remove }) => {
+const Todo = ({ todo, remove, toggle }) => {
   return (
     <li>
       <input
@@ -12,7 +14,7 @@ const Todo = ({ todo, toggle, remove }) => {
       />
       <span
         style={{
-          "text-decoration": todo.done ? "line-through" : "none",
+          textDecoration: todo.done ? "line-through" : "none",
         }}
       >
         {todo.text}
@@ -22,36 +24,54 @@ const Todo = ({ todo, toggle, remove }) => {
           remove(todo.id);
         }}
       >
-        삭제
+        X
       </button>
     </li>
   );
 };
 
-const Todos = ({ todos, input, changeInput, insert, toggle, remove }) => {
+const Todos = ({ input, todos, changeInput, insert, remove, toggle }) => {
   const onChange = (e) => {
     changeInput(e.target.value);
   };
 
-  const onSubmit = (e) => {
-    e.preventDefault();
-    insert(input);
-    changeInput("");
-  };
-
   return (
     <div>
-      <form onSubmit={onSubmit}>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (input !== "") {
+            insert(input);
+          }
+          changeInput("");
+        }}
+      >
         <input type="text" value={input} onChange={onChange} />
-        <button type="submit">추가</button>
+        <button>추가</button>
       </form>
       <ul>
-        {todos.map((todo) => (
-          <Todo todo={todo} toggle={toggle} remove={remove} />
-        ))}
+        {todos.map((todo) => {
+          return (
+            <Todo key={todo.id} todo={todo} remove={remove} toggle={toggle} />
+          );
+        })}
       </ul>
     </div>
   );
 };
 
-export default Todos;
+const mapStateToProps = (state) => {
+  return {
+    input: state.todos.input,
+    todos: state.todos.todos,
+  };
+};
+
+const mapDispatchToProps = {
+  changeInput,
+  insert,
+  remove,
+  toggle,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Todos);

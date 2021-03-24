@@ -136,7 +136,10 @@ const Home = ({dispatch}) => {
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {
-    return {dispatch};
+    return {
+      increase: () => dispatch(increase()),
+      decrease: () => dispatch(decrease())
+    };
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home);
@@ -144,7 +147,9 @@ export default connect(mapStateToProps, mapDispatchToProps)(Home);
 
 ## combineReducers
 
-프로젝트 한개에서는 하나의 스토어를 생성하는게 좋습니다. 그런데 여러개의 reducer를 사용하고 싶다면(여러 종류의 데이터) combineReducers를 이용합니다.
+프로젝트 한개에서는 하나의 스토어를 생성하는게 좋습니다. (여러개의 스토어가 있을 경우 복잡성이 증가하고 관리가 힘드므로) 그런데 여러개의 reducer를 사용하고 싶다면(여러 종류의 데이터를 사용하고 싶다면) combineReducers를 이용합니다.
+
+### ./src/modules/index.js
 
 ```javascript
 import { combineReducers } from "redux";
@@ -158,6 +163,8 @@ const rootReducer = combineReducers({
 
 export default rootReducer;
 ```
+
+### ./src/index.js
 
 ```javascript
 (...)
@@ -176,7 +183,7 @@ ReactDOM.render(
 
 ## bindActionCreators
 
-bindActionCreators를 사용하면 액션 생성 함수의 개수가 많아지더라도 간편하게 액션 생성 함수를 받아올 수 있습니다. 더하여 connect의 두번째 인자로 함수가 아닌 객체를 전달하게 되면 connect 함수 내부에서 bindActionCreators를 자동으로 처리해줍니다.
+bindActionCreators를 사용하면 액션 생성 함수의 개수가 많아지더라도 간편하게 액션 생성 함수를 받아올 수 있습니다. 더하여 connect의 두번째 인자로 함수가 아닌 객체를 전달하게 되면 connect 함수 내부에서 bindActionCreators를 자동으로 처리해줍니다. 인자를 필요로 하는 액션 생성 함수의 경우에도 자동으로 처리해줘서 매우 편리하게 사용할 수 있습니다.
 
 ```javascript
 import {connect} from 'react-redux';
