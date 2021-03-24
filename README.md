@@ -80,15 +80,31 @@ store.dispatch({type:'ADD'});
 
 `$yarn add react-redux`
 
-### Provider
+### Provider(component)
 
-Provider는 react에사 react가 제공하는 component입니다. Provider에는 store라는 property를 전달해야 합니다. store로 우리가 생성한 store를 전달해주면 됩니다. Provider로 감싼 부분에서는 store의 데이터를 읽을 수 있게 됩니다.
+Provider는 react에서 store를 사용할 수 있도록 redux가 제공하는 component입니다. Provider에는 store라는 property를 전달해야 합니다. store로 우리가 생성한 store를 전달해주면 됩니다. Provider로 감싼 부분에서는 store의 데이터를 읽을 수 있게 됩니다.
 
-### connect
+```javascript
+(...)
+import { Provider } from "react-redux";
 
-connect는 두개의 인자를 받고 함수를 return해주며 return한 함수는 component를 인자로 받습니다. connect가 받는 두개의 인자는 mapStateToProps와 mapDispatchToProps입니다. 각 인자는 아래에서 더욱 자세히 알아봅니다.
+ReactDOM.render(
+  <Provider store={store}>
+    <App />
+  </Provider>,
+  document.getElementById("root")
+);
+```
 
-## [mapStateToProps](https://react-redux.js.org/using-react-redux/connect-mapstate)
+### connect(function)
+
+리액트의 컴포넌트를 리덕스와 연동하려면 react-redux가 제공하는 connect함수를 사용하면 됩니다.
+connect는 두개의 인자를 받고 함수를 return해주며 return한 함수는 component를 인자로 받아 redux와 연동된 component를 return해줍니다.
+connect가 받는 두개의 인자는 순서대로 mapStateToProps와 mapDispatchToProps입니다. 각 인자는 아래 mapToProps에서 더욱 자세히 알아봅니다.
+
+## mapToProps
+
+### [mapStateToProps](https://react-redux.js.org/using-react-redux/connect-mapstate)
 
 우선 react에서 큰 흐름 중 하나는 component에 정보를 전달하는 것이 props를 통해서 이루어진다는 것입니다. 따라서 getState()를 사용해서 component에서 받아오는 것이 아니라 mapStateToProps를 정의하여 props로 전달하는 것이 가능합니다. 아래와 같이 정의 가능하며 mapStateToProps가 return 하는 값이 component의 props에 추가됩니다.
 
@@ -107,7 +123,7 @@ const mapStateToProps = (state, ownProps) => { // state는 store로부터 온 st
 export default connect(mapStateToProps)(Home);
 ```
 
-## mapDispatchToProps
+### mapDispatchToProps
 
 mapDispatchToProps은 사용방법은 mapStateToProps와 비슷한데요. dispatch와 ownProps를 인자로 받는 함수로서 return하는 dispatch 함수가 component의 props에 추가됩니다.
 
@@ -122,6 +138,64 @@ const Home = ({dispatch}) => {
 const mapDispatchToProps = (dispatch, ownProps) => {
     return {dispatch};
 }
+
+export default connect(mapStateToProps, mapDispatchToProps)(Home);
+```
+
+## combineReducers
+
+프로젝트 한개에서는 하나의 스토어를 생성하는게 좋습니다. 그런데 여러개의 reducer를 사용하고 싶다면(여러 종류의 데이터) combineReducers를 이용합니다.
+
+```javascript
+import { combineReducers } from "redux";
+import counter from "./counter";
+import todos from "./todos";
+
+const rootReducer = combineReducers({
+  todos,
+  counter,
+});
+
+export default rootReducer;
+```
+
+```javascript
+(...)
+import { createStore } from "redux";
+import rootReducer from "./modules/rootReducer";
+
+const store = createStroe(rootReducer);
+
+ReactDOM.render(
+  <Provider store={store}>
+    <App />
+  </Provider>,
+  document.getElementById("root")
+);
+```
+
+## bindActionCreators
+
+bindActionCreators를 사용하면 액션 생성 함수의 개수가 많아지더라도 간편하게 액션 생성 함수를 받아올 수 있습니다. 더하여 connect의 두번째 인자로 함수가 아닌 객체를 전달하게 되면 connect 함수 내부에서 bindActionCreators를 자동으로 처리해줍니다.
+
+```javascript
+import {connect} from 'react-redux';
+import { increase, decrease } from "../modules/counter.js";
+
+const Home = ({number, increase, decrease}) => {
+    (...)
+}
+
+const mapStateToProps = (state) => {
+  return {
+      number: state.counter.number
+   };
+};
+
+const mapDispatchToProps = {
+  increase,
+  decrease,
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home);
 ```
