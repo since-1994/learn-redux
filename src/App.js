@@ -1,14 +1,11 @@
 import React from "react";
-import { connect } from "react-redux";
-import Counter from "./components/Counter";
-import Todos from "./components/Todos";
+import CounterContainer from "./components/CounterContainer";
+import SampleContainer from "./components/SampleContainer";
 
 const App = () => {
   return (
     <div>
-      <Counter />
-      <hr />
-      <Todos />
+      <SampleContainer />
     </div>
   );
 };
